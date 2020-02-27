@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { withFormik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 
 function SignUpForm(props) {
+    const [users, setUsers] = useState([]);
+    useEffect(() => {
+        props.status && setUsers(users => [...users, props.status]);
+    }, [props.status])
+
     return(
         <div className='sign-up-form'>
             <Form>
@@ -25,6 +30,14 @@ function SignUpForm(props) {
                 {props.touched.tos && props.errors.tos && (<p className='errors'>{props.errors.tos}</p>)}
                 <button type='submit'>Submit</button>
             </Form>
+            {users.map(user => (
+                <ul key={user.name}>
+                    <li>Name: {user.name}</li>
+                    <li>Email: {user.email}</li>
+                    <li>Password: {user.password}</li>
+                    <li>Agreed to Terms: {user.tos}</li>
+                </ul>
+            ))}
         </div>
     );
 }
@@ -49,7 +62,7 @@ const FormikSignUpForm = withFormik({
         axios
         .post('https://reqres.in/api/users/', values)
         .then(res => {
-            console.log('success', res);
+            console.log('success', res.data);
             setStatus(res.data);
             resetForm();
         })
