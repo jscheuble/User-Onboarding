@@ -1,6 +1,7 @@
 import React from 'react';
 import { withFormik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 function SignUpForm(props) {
     return(
@@ -43,7 +44,17 @@ const FormikSignUpForm = withFormik({
         password: Yup.string().min(8).required('Password must exceed 8 characters'),
         tos: Yup.boolean().oneOf([true], 'You must agree to our Terms of Service')
     }),
-    
+    handleSubmit(values, { setStatus, resetForm }) {
+        console.log('submitting', values);
+        axios
+        .post('https://reqres.in/api/users/', values)
+        .then(res => {
+            console.log('success', res);
+            setStatus(res.data);
+            resetForm();
+        })
+        .catch(err => console.log(err));
+    }
 })(SignUpForm);
 
 export default FormikSignUpForm;
